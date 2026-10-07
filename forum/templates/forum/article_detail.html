@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block main %}
+            <div class="d-flex justify-content-between"><div class="col-8">
+                <div class="card"><div class="card-header d-flex justify-content-between">{{ post.category }}
+                    <div>
+                        <a href="#!" class="btn btn-dark">Delete</a>
+                        <a href="#!" class="btn btn-dark">Change</a>
+                        <a href="/category/{{ post.pk }}/" class="btn btn-dark">Back</a>
+                    </div>
+                </div>
+                    <img src="" class="card-img-top" alt="">
+                <div class="card-body">
+                    {% if post.photo %}
+                    <img src="{{ post.photo.url }}" width="300" alt="">
+                    {% else %}
+                    <img src="https://www.raumplus.ru/upload/iblock/99e/Skoro-zdes-budet-foto.jpg" width="300" alt="">
+                    {% endif %}
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">
+                        {{ post.content | linebreaks }}
+                </div>
+                    <div class="card-footer d-flex justify-content-between"><p class="card-text">{{ post.created_at }}</p>
+                        <a href="/profile/1">Author of article: Someone</a>
+                        <p class="card-text">{{ post.watched }}</p>
+                    </div>
+                </div>
+                <hr>
+
+                <!--  reviews-->
+                <form action="#!" method="post" , enctype="multipart/form-data">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="dVpvJs374bq08P5ZzKsB7pSNUnoJ6PXRIDRXHc1fjvFIdKmbXrQMDMR0wYHLFtut">
+                    <textarea name="text" cols="40" rows="10" class="form-control" placeholder="Your text of comment" required id="id_text"></textarea>
+                    <button class="btn btn-dark" type="submit">Add comment</button>
+                </form>
+
+                <div class="card mt-2"><h5 class="card-header">Someone</h5>
+                    <div class="card-body">
+                        <p class="card-text">Text</p>
+                    </div>
+                </div>
+            </div>
+            <!--  Recommendation-->
+            <div class="col-1"></div>
+            <div class="col-4">
+                {% for ext in ext_posts %}
+                <div class="card" style="width: 18rem;">
+                    {% if ext.photo %}
+                    <img src="{{ ext.photo.url }}" width="80" alt="">
+                    {% else %}
+                    <img src="https://www.raumplus.ru/upload/iblock/99e/Skoro-zdes-budet-foto.jpg" width="300" alt="">
+                    {% endif %}
+                    <img class="card-img-top" src="https://www.raumplus.ru/upload/iblock/99e/Skoro-zdes-budet-foto.jpg" width="200" alt="">
+                    <div class="card-body"><h5 class="card-title">{{ ext.title }}</h5><a href="{{ ext.get_absolute_url }}" class="btn btn-primary">Info</a></div>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+{% endblock main %} 
