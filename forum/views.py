@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Category, Post
 from django.db.models import F
 from .forms import PostAddForm
@@ -44,7 +44,11 @@ def post_detail(request, pk):
 def add_post(request):
     # Add a article by user, without admin
     if request.method == 'POST':
-        pass
+        form = PostAddForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = Post.objects.create(**form.cleaned_data)
+            post.save()
+            return redirect('post_detail', post.pk)
     else:
         form = PostAddForm()
 
