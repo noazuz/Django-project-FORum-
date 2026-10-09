@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Category, Post
 from django.db.models import F
-from .forms import PostAddForm
-
+from .forms import PostAddForm, LoginForm, RegistrationForm
+from django.contrib.auth import login, logout
 
 def Index(request):
-    # MAIN PAGE
+    # Main page
     posts = Post.objects.all()
     categories = Category.objects.all()
     context = {
@@ -17,7 +17,7 @@ def Index(request):
 
 
 def category_list(request, pk):
-    # REACTION ON PRESSED BUTTON OF CATEGORY
+    # Reaction on pressed button of category
     posts = Post.objects.filter(category_id=pk)
     categories = Category.objects.all()
     context = {
@@ -29,7 +29,7 @@ def category_list(request, pk):
 
 
 def post_detail(request, pk):
-    # PAGE OF ARTICLE
+    # Page of article
     article = Post.objects.get(pk=pk)
     Post.objects.filter(pk=pk).update(watched=F('watched') + 1)
     ext_post = Post.objects.all().order_by('-watched')[:5]
@@ -57,3 +57,42 @@ def add_post(request):
         'title': "Add a article",
     }
     return render(request, 'forum/article_add_form.html', context)
+
+
+def user_login(request):
+    # Auth user
+    if request.method =='POST':
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('Index')
+    else:
+        form = LoginForm()
+
+    context = {
+        'title': 'Auth user',
+        'form': form,
+    }
+    return render(request, 'forum/login_form.html', context)
+
+def user_logout(request):
+    # Logout user
+    logout(request)
+    return redirect('Index')
+
+
+def user_register(request):
+    # Register user
+    if request.method == 'POST':
+        form = RegistrationForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = RegistrationForm()
+    context = {
+        'title': 'Registration user',
+        'form': form,
+    }
+    return render(request, 'forum/registration_form.html', context)
