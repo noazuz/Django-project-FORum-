@@ -3,6 +3,7 @@ from .models import Category, Post
 from django.db.models import F
 from .forms import PostAddForm, LoginForm, RegistrationForm
 from django.contrib.auth import login, logout
+from django.contrib import messages
 
 def Index(request):
     # Main page
@@ -32,7 +33,7 @@ def post_detail(request, pk):
     # Page of article
     article = Post.objects.get(pk=pk)
     Post.objects.filter(pk=pk).update(watched=F('watched') + 1)
-    ext_post = Post.objects.all().order_by('-watched')[:5]
+    ext_post = Post.objects.all().exclude(pk=pk).order_by('-watched')
     context = {
         'title': article.title,
         'post': article,
@@ -66,6 +67,7 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, 'Success authorization')
             return redirect('Index')
     else:
         form = LoginForm()
@@ -79,6 +81,7 @@ def user_login(request):
 def user_logout(request):
     # Logout user
     logout(request)
+    messages.error(request, 'Success logout')
     return redirect('Index')
 
 
@@ -88,6 +91,7 @@ def user_register(request):
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Success registration. Please login')
             return redirect('login')
     else:
         form = RegistrationForm()
